@@ -1,0 +1,34 @@
+$schema: https://moonrepo.dev/schemas/tasks.json
+
+fileGroups:
+  sources:
+    - app/**/*.{ts,tsx}
+    - src/**/*.{ts,tsx}
+
+tasks:
+  lint:
+    command: eslint --ext .js,.ts,.tsx --fix --ignore-path @in(0) --report-unused-disable-directives --no-error-on-unmatched-pattern --exit-on-fatal-error --resolve-plugins-relative-to .
+    inputs:
+      - /.gitignore
+      - /.eslintrc.js
+      - '**/.eslintrc.js'
+      - '@globs(sources)'
+      - 'tsconfig.json'
+      - /tsconfig.eslint.json
+      - /tsconfig.options.json
+
+  format:
+    command: prettier --write --config @in(1) --ignore-path @in(0) .
+    inputs:
+      - /.gitignore
+      - /.prettierrc.js
+      - '@globs(sources)'
+      - '**/*.{yml,json}'
+    local: true
+
+  typecheck:
+    command: tsc --incremental --pretty --noEmit
+    inputs:
+      - '@globs(sources)'
+      - tsconfig.json
+      - /tsconfig.options.json

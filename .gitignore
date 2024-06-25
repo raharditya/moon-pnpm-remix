@@ -1,0 +1,24 @@
+.DS_Store
+node_modules
+.cache
+build
+public/build
+.env*
+!.env.example
+*.tsbuildinfo
+tmp
+*.out
+dist
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+/vendor/
+/Godeps/
+.vscode
+
+# moon
+.moon/cache
+.moon/docker

@@ -1,0 +1,36 @@
+$schema: https://moonrepo.dev/schemas/workspace.json
+
+projects:
+  - apps/*
+
+constraints:
+  enforceProjectTypeRelationships: true
+
+hasher:
+  optimization: accuracy
+  walkStrategy: vcs
+  warnOnMissingInputs: true
+
+runner:
+  cacheLifetime: 7 days
+  archivableTargets:
+    - :lint
+    - :format
+    - :typecheck
+  inheritColorsForPipedTasks: true
+  logRunningCommand: true
+
+telemetry: true
+
+vcs:
+  defaultBranch: master
+  hooks:
+    pre-push:
+      - 'moon :test --affected'
+  manager: git
+  provider: gitlab
+  remoteCandidates:
+    - origin
+  syncHooks: true
+
+versionConstraint: '>=1.0.0'

@@ -1,0 +1,64 @@
+$schema: https://moonrepo.dev/schemas/project.json
+
+language: typescript
+
+type: application
+
+platform: node
+
+tasks:
+  build-remix:
+    command: remix vite:build
+    inputs:
+      - app/**/*
+      - public/**/*
+      - shared/**/*
+      - vite.config.ts
+      - env.d.ts
+    outputs:
+      - .cache
+      - build
+
+  build-shared:
+    command: esbuild ./shared/*.ts
+    args:
+      - --platform=node
+      - --format=esm
+      - --outdir=build/shared
+    inputs:
+      - shared/**/*
+    outputs:
+      - build/shared
+
+  build-server:
+    command: esbuild ./server.ts
+    args:
+      - --platform=node
+      - --format=esm
+      - --outfile=build/index.js
+    inputs:
+      - shared/**/*
+      - server.ts
+    outputs:
+      - build/index.js
+
+  build:
+    command: 'noop'
+    deps:
+      - build-remix
+      - build-server
+      - build-shared
+    options:
+      runDepsInParallel: false
+
+  dev:
+    command: node ./dev.js
+    local: true
+
+  start:
+    command: node ./build/index.js
+    deps:
+      - build
+    env:
+      NODE_ENV: production
+    local: true

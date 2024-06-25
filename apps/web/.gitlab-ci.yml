@@ -1,0 +1,23 @@
+build-web:
+  extends: .build
+  variables:
+    APP_NAME: web
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+      changes:
+        - apps/web/**/*
+
+build-commit-web:
+  extends: .build-commit
+  variables:
+    APP_NAME: web
+  rules:
+    - if: '$CI_COMMIT_MESSAGE =~ /^\[\*:build] .*/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^\[web:build] .*/'
+    - if: '$CI_PIPELINE_SOURCE != "merge_request_event"'
+      when: never
+
+release-web:
+  extends: .release
+  variables:
+    APP_NAME: web

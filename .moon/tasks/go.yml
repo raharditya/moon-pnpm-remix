@@ -1,0 +1,23 @@
+$schema: https://moonrepo.dev/schemas/tasks.json
+
+fileGroups:
+  sources:
+    - '**/*.go'
+    - '!**/*_test.go' # TODO: not working
+
+tasks:
+  test:
+    command: go test -count=1 ./...
+    inputs:
+      - '@globs(sources)'
+
+  test-coverage:
+    command: go test -count=1 -coverprofile=coverage.out ./... && go tool cover -html=coverage.out
+    inputs:
+      - '@globs(sources)'
+
+  dev:
+    command: air
+    env:
+      DEBUG: '1'
+    local: true

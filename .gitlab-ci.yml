@@ -1,0 +1,50 @@
+default:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - apk add --no-cache python3 py3-pip
+    - pip3 install awscli --break-system-packages
+    - $(aws ecr get-login --no-include-email --region ap-southeast-1)
+
+stages:
+  - build
+  - release
+
+include:
+  - apps/**/.gitlab-ci.yml
+
+variables:
+  DOCKER_DRIVER: overlay2
+  IMAGE_NAME: moon-pnpm-remix
+  REGISTRY_IMAGE: $DOCKER_REGISTRY/$IMAGE_NAME
+
+workflow:
+  auto_cancel:
+    on_new_commit: conservative
+
+.build:
+  stage: build
+  environment: development
+  script:
+    - docker pull $REGISTRY_IMAGE-$APP_NAME:dev || true
+    - docker build --cache-from $REGISTRY_IMAGE-$APP_NAME:dev --tag $REGISTRY_IMAGE-$APP_NAME:$CI_COMMIT_SHORT_SHA --tag $REGISTRY_IMAGE-$APP_NAME:dev -f apps/$APP_NAME/Dockerfile .
+    - docker push $REGISTRY_IMAGE-$APP_NAME --all-tags
+
+.build-commit:
+  stage: build
+  environment: development
+  script:
+    - docker pull $REGISTRY_IMAGE-$APP_NAME:$CI_COMMIT_BRANCH || true
+    - docker build --cache-from $REGISTRY_IMAGE-$APP_NAME:$CI_COMMIT_BRANCH --tag $REGISTRY_IMAGE-$APP_NAME:$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA --tag $REGISTRY_IMAGE-$APP_NAME:$CI_COMMIT_BRANCH -f apps/$APP_NAME/Dockerfile .
+    - docker push $REGISTRY_IMAGE-$APP_NAME --all-tags
+
+.release:
+  stage: release
+  environment: production
+  script:
+    - docker pull $REGISTRY_IMAGE-$APP_NAME:dev
+    - docker tag $REGISTRY_IMAGE-$APP_NAME:dev $REGISTRY_IMAGE-$APP_NAME:latest
+    - docker push $REGISTRY_IMAGE-$APP_NAME:latest
+  only:
+    - master

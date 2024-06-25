@@ -1,0 +1,50 @@
+{
+  "name": "@moon-pnpm-remix/web",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "build:remix": "remix vite:build",
+    "build:shared": "esbuild --platform=node --format=esm --outdir=build/shared ./shared/*.ts",
+    "build:server": "esbuild --platform=node --format=esm --outfile=build/index ./server.ts",
+    "build": "pnpm build:remix && pnpm build:shared && pnpm build:server",
+    "dev": "node ./dev.js",
+    "start": "NODE_ENV=production node ./build/index.js"
+  },
+  "dependencies": {
+    "@remix-run/express": "^2.8.1",
+    "@remix-run/node": "^2.8.1",
+    "@remix-run/react": "^2.8.1",
+    "compression": "^1.7.4",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "isbot": "^5.1.4",
+    "morgan": "^1.10.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-wrap-balancer": "^1.1.0",
+    "remix-utils": "^7.5.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.8.1",
+    "@remix-run/eslint-config": "^2.8.1",
+    "@types/compression": "^1.7.5",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/express": "^4.17.21",
+    "@types/js-cookie": "^3.0.6",
+    "@types/morgan": "^1.9.9",
+    "@types/react": "^18.2.74",
+    "@types/react-dom": "^18.2.24",
+    "autoprefixer": "^10.4.19",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.57.0",
+    "execa": "^8.0.1",
+    "postcss": "^8.4.38",
+    "tailwindcss": "3.4.3",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.4",
+    "vite": "^5.0.12",
+    "vite-tsconfig-paths": "^4.3.1"
+  }
+}
